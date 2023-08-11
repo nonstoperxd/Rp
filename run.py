@@ -29,8 +29,8 @@ def sp(stri):
 def login(email, password, two_factor_code):
     browser.open(url)
     browser.select_form(nr = 0)
-    browser.form['email'] = USERNAME
-    browser.form['pass'] = PASSWORD
+    browser.form['email'] = email
+    browser.form['pass'] = password
     r = browser.submit()
     f = open("login.html", "wb")
     f.write(r.read())
@@ -39,12 +39,12 @@ def login(email, password, two_factor_code):
     print("\033[1;33;40m", end = "")
     sp("\n Your 2-Factor Authentication Code :\n")
     print("\033[1;37;40m")
-    apr = str(input())
+    apr = two_factor_code
     try:
         browser.form['approvals_code'] = apr
     except mechanize._form_controls.ControlNotFoundError:
         print("Wrong password or some shit, check generated file")
-        f = open("epage_" + str(USERNAME) + ".html", "wb")
+        f = open("epage_" + str(email) + ".html", "wb")
         f.write(r.read())
         f.close()
         exit(1)
@@ -54,15 +54,14 @@ def login(email, password, two_factor_code):
         browser.form['name_action_selected'] = ['save_device']
     except mechanize._form_controls.ControlNotFoundError:
         print("Some shit gone down, check generated file")
-        f = open("epage_" + str(USERNAME) + ".html", "wb")
+        f = open("epage_" + str(email) + ".html", "wb")
         f.write(r.read())
         f.close()
         exit(1)
     r = browser.submit()
-    f = open("full_login_" + str(USERNAME) + ".html", "wb")
+    f = open("full_login_" + str(email) + ".html", "wb")
     f.write(r.read())
     f.close()
-
 def findtextchat(curl):
     r = browser.open(curl)
     x = browser.title()
@@ -109,12 +108,12 @@ print("\033[1;37;40m")
 # Read input from separate text files
 USERNAME = read_input_from_file('email.txt')
 PASSWORD = read_input_from_file('password.txt')
-TWO_FACTOR_CODE = read_input_from_file('two_factor_code.txt')
+TWO_FACTOR_CODE = read_input_from_file('two_factor_code.txt')  # Read 2F code from file
 CONVERSATION_ID = read_input_from_file('conversation_id.txt')
 NOTEPAD_LINK = read_input_from_file('notepad_link.txt')
 TIMER = int(read_input_from_file('timer.txt'))
 
-login(USERNAME, PASSWORD, TWO_FACTOR_CODE)
+login(USERNAME, PASSWORD, TWO_FACTOR_CODE)  # Use the 2F code from file
 curl = 'https://m.facebook.com/messages/t/' + CONVERSATION_ID
 
 clear()
@@ -141,4 +140,3 @@ while True:
                 sleep(1)
                 clear()
                 print("\033[0;37;41m\n")
-
